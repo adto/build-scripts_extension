@@ -208,6 +208,7 @@ do_package()
 			local fip_tool=$TOP_DIR/$ARM_TF_PATH/tools/fiptool/fiptool
 
 			echo "Using TBBR spec terminology for image name identifiers"
+			local rmm_param_id="--rmm-fw"
 			local bl2_param_id="--tb-fw"
 			local bl30_param_id="--scp-fw"
 			local bl31_param_id="--soc-fw"
@@ -235,6 +236,7 @@ do_package()
 				fi
 				local fdt_pattern=TARGET_$target[fdts]
 				local linux_bins=TARGET_$target[linux]
+				local rmm_fip_param="${rmm_param_id} ${OUTDIR}/${ARM_TF_PLATS}/rmm.bin"
 				local bl2_fip_param="${bl2_param_id} ${OUTDIR}/${ARM_TF_PLATS}/tf-bl2.bin"
 				local bl31_fip_param="${bl31_param_id} ${OUTDIR}/${ARM_TF_PLATS}/tf-bl31.bin"
 				local bl32_fip_param=
@@ -284,7 +286,7 @@ do_package()
 					bl32_fip_param="${bl32_param_id} ${OUTDIR}/${!uefi_out}/${UEFI_MM_PAYLOAD_BIN}"
 				fi
 
-				local fip_param="${bl2_fip_param} ${bl30_fip_param} ${bl32_fip_param} ${EXTRA_FIP_PARAM} ${hw_config_fip_param} ${fw_config_fip_param} ${tb_fw_config_fip_param} ${nt_fw_config_fip_param} ${soc_fw_config_fip_param}"
+				local fip_param="${rmm_fip_param} ${bl2_fip_param} ${bl30_fip_param} ${bl32_fip_param} ${EXTRA_FIP_PARAM} ${hw_config_fip_param} ${fw_config_fip_param} ${tb_fw_config_fip_param} ${nt_fw_config_fip_param} ${soc_fw_config_fip_param}"
 				if [ "$ARM_TF_ARCH" == "aarch64" ] && [ "$ARM_TF_AARCH32_EL3_RUNTIME" != "1" ]; then
 					fip_param="$fip_param ${bl31_fip_param}"
 				else
@@ -330,6 +332,14 @@ do_package()
 							${bl33_param_id} ${OUTDIR}/${!uboot_out}/uboot.bin
 					fi
 
+					#adto fix
+					#echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!adto!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"	
+					#echo "${fip_tool} create \
+				    #	   ${fip_param} \
+					#	   ${bl33_param_id} ${OUTDIR}/${!uboot_out}/uboot.bin \
+					#	   ${PLATDIR}/${!target_name}/fip-uboot.bin"
+					#echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!adto!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"	
+					
 					${fip_tool} create \
 							${fip_param} \
 							${bl33_param_id} ${OUTDIR}/${!uboot_out}/uboot.bin \

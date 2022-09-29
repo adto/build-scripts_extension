@@ -123,6 +123,13 @@ do_package ()
 			for bin in $TOP_DIR/$ARM_TF_PATH/build/$plat/${mode}/bl*.bin; do
 				cp ${bin} ${OUTDIR}/$plat/tf-$(basename ${bin})
 			done
+            
+            #adto fix
+            if [ -e $TOP_DIR/$ARM_TF_PATH/build/$plat/${mode}/rmm.bin ]; then
+				cp $TOP_DIR/$ARM_TF_PATH/build/$plat/${mode}/rmm.bin ${OUTDIR}/$plat/
+			fi
+            #end of adto fix
+            
 			if [ -e $TOP_DIR/$ARM_TF_PATH/build/$plat/${mode}/fdts ]; then
 				cp $TOP_DIR/$ARM_TF_PATH/build/$plat/${mode}/fdts/*.dtb ${OUTDIR}/$plat/
 			fi
