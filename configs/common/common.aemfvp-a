@@ -1,0 +1,88 @@
+# Copyright (c) 2021, ARM Limited and Contributors. All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# Redistributions of source code must retain the above copyright notice, this
+# list of conditions and the following disclaimer.
+#
+# Redistributions in binary form must reproduce the above copyright notice,
+# this list of conditions and the following disclaimer in the documentation
+# and/or other materials provided with the distribution.
+#
+# Neither the name of ARM nor the names of its contributors may be used
+# to endorse or promote products derived from this software without specific
+# prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+
+VARIANT_DESC="Armv-A Base AEM FVP for BusyBox Software Stack"
+
+source $DIR/configs/common/common.base
+
+#Override cross compile toolchain for Armv-A Base AEM FVP aarch64
+export CROSS_COMPILE_64=${TOP_DIR}/tools/arm64_gcc/bin/aarch64-none-linux-gnu-
+export CROSS_COMPILE=$CROSS_COMPILE_64
+export LINUX_COMPILER=$CROSS_COMPILE_64
+
+#Linux defconfig options for Armv-A Base AEM FVP
+BUSYBOX_LINUX_CONFIG_LIST="defconfig"
+
+#U-Boot options
+UBOOT_BUILD_ENABLED=1
+UBOOT_BOARDS="vexpress_aemv8a_semi"
+UBOOT_OUTPUT_DESTS[vexpress_aemv8a_semi]=aemfvp-a
+UBOOT_CONFIG="$DIR/$PLATFORM/uboot/${PLATFORM}_defconfig"
+
+#UEFI options
+UEFI_PLATFORMS="aemfvp_a"
+declare -A UEFI_PLAT_aemfvp_a
+UEFI_PLAT_aemfvp_a[platname]="ArmVExpress-FVP-AArch64"
+UEFI_PLAT_aemfvp_a[output]="aemfvp-a"
+UEFI_PLAT_aemfvp_a[defines]=
+UEFI_PLAT_aemfvp_a[dsc]="edk2-platforms/Platform/ARM/VExpressPkg/ArmVExpress-FVP-AArch64.dsc"
+UEFI_PLAT_aemfvp_a[binary]="FVP_AARCH64_EFI.fd"
+UEFI_PLAT_aemfvp_a[outbin]="uefi.bin"
+
+#Set Platform for build ARM-TF
+ARM_TF_PLATS="fvp"
+
+TARGET_BINS_PLATS="aemfvp_a"
+declare -A TARGET_aemfvp_a
+TARGET_aemfvp_a[arm-tf]="aemfvp-a"
+TARGET_aemfvp_a[scp]=""
+TARGET_aemfvp_a[uboot]="aemfvp-a"
+TARGET_aemfvp_a[uefi]="aemfvp-a"
+TARGET_aemfvp_a[fdts]="fvp-base-revc fvp-base-gicv3-psci"
+TARGET_aemfvp_a[linux]="${LINUX_IMAGE_TYPE}"
+TARGET_aemfvp_a[output]="aemfvp-a"
+
+#Grub build enabled for UEFI+Busybox booting
+GRUB_BUILD_ENABLED=1
+GRUB_PATH=grub
+GRUB_PLAT_CONFIG_FILE=${DIR}/$PLATFORM/grub_config/aemfvp-a.cfg
+
+#Busybox copies
+TARGET_BINS_COPY_ENABLED=0
+FVP_UBOOT_BUSYBOX_FOLDER=$PLATDIR/${PLATFORM}-busybox/
+index=${#TARGET_BINS_COPY_LIST_BUSYBOX[@]}
+TARGET_BINS_COPY_LIST_BUSYBOX[$[index++]]="${OUTDIR}/linux/${LINUX_IMAGE_TYPE} ${FVP_UBOOT_BUSYBOX_FOLDER}/Image"
+TARGET_BINS_COPY_LIST_BUSYBOX[$[index++]]="${OUTDIR}/linux/fvp-base-revc.dtb ${FVP_UBOOT_BUSYBOX_FOLDER}/dtb"
+TARGET_BINS_COPY_LIST_BUSYBOX[$[index++]]="${OUTDIR}/aemfvp-a/tf-bl1.bin ${FVP_UBOOT_BUSYBOX_FOLDER}/bl1.bin"
+TARGET_BINS_COPY_LIST_BUSYBOX[$[index++]]="${PLATDIR}/aemfvp-a/fip-uboot.bin ${FVP_UBOOT_BUSYBOX_FOLDER}/"
+
+if [[ $UEFI_BUILD_ENABLED == 1 ]]; then
+	TARGET_BINS_COPY_LIST_BUSYBOX[$[index++]]="${PLATDIR}/aemfvp-a/fip-uefi.bin ${FVP_UBOOT_BUSYBOX_FOLDER}/"
+fi
+
+BUILD_SCRIPTS="aemfvp-a/fetch-tools.sh $BUILD_SCRIPTS build-grub.sh "

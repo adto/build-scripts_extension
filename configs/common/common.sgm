@@ -1,0 +1,88 @@
+# Copyright (c) 2015, ARM Limited and Contributors. All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# Redistributions of source code must retain the above copyright notice, this
+# list of conditions and the following disclaimer.
+#
+# Redistributions in binary form must reproduce the above copyright notice,
+# this list of conditions and the following disclaimer in the documentation
+# and/or other materials provided with the distribution.
+#
+# Neither the name of ARM nor the names of its contributors may be used
+# to endorse or promote products derived from this software without specific
+# prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+
+FLAVOUR_NAME="sgm"
+
+#Android options
+ANDROID_BINS_VARIANTS="mobile"
+ANDROID_LUNCH_TARGET_PREBUILT="css_gpu-userdebug"
+VARIANT_DESC="System Guidance for Mobile $FLAVOUR_NAME"
+source $DIR/configs/common/common.base
+
+BUILD_SCRIPTS=""
+BUILD_SCRIPTS=$BUILD_SCRIPTS"build-uboot.sh build-arm-tf.sh build-optee-os.sh build-target-bins.sh build-linux.sh build-scp.sh "
+
+#SCP options
+#   SCP_COMPILER_PATH - Path to arm-none-eabi- toolchain, should be
+#   gcc-arm-none-eabi-5_4-2016q3
+SCP_COMPILER_PATH=$TOP_DIR/tools/gcc/gcc-arm-none-eabi-5_4-2016q3/bin
+
+#U-Boot options
+#   Defaults are set below.
+#   To implement a platform, the following must be done.
+#   Set UBOOT_BOARDS to the name of the platform (juno as an example):
+#       UBOOT_BOARDS="vexpress_aemv8a_juno"
+#   Then for each of the UBOOT_BOARDS values, set the name of the output folder
+#   that artifacts should be copied into:
+#       UBOOT_OUTPUT_DESTS[vexpress_aemv8a_juno]=juno
+UBOOT_BUILD_ENABLED=1
+UBOOT_PATH=u-boot
+UBOOT_ARCH=aarch64
+UBOOT_MKIMG=${TOP_DIR}/${UBOOT_PATH}/output/tools/mkimage
+UBOOT_UIMAGE_ADDRS="0x80080000"
+UBOOT_BOARDS="sgm_fvp"
+UBOOT_OUTPUT_DESTS[sgm_fvp]=css-common
+
+#Use device trees
+DEVTREE_BUILD_ENABLED=1
+BUILD_SCRIPTS=$BUILD_SCRIPTS"build-devtrees.sh "
+DEVTREE_PATH=device-tree
+CONCAT_DEVTREE_BUILD=1
+
+#OPTEE Options
+#   Defaults are set below. To turn OPTEE on, the following must be done.
+#   OPTEE_BUILD_ENABLED - Set this to 1
+#   OPTEE_PLATFORM="vexpress" - Set this to the platform name to build.
+#   OPTEE_FLAVOUR="mobile" - Set the flavour name
+#   OPTEE_WITH_PAGER=y - Set OPTEE building with pager by default.
+OPTEE_BUILD_STEP="build-optee-os.sh"
+# set trusted firmware to use dram for TEE
+OPTEE_RAM_LOCATION=dram
+OPTEE_CLIENT_CROSS_COMPILE=${CROSS_COMPILE}
+OPTEE_OS_AARCH64_CORE=y
+OPTEE_OS_PATH=optee/optee_os
+OPTEE_CORE_LOG_LEVEL=1
+OPTEE_OS_BIN_NAME="tee.bin"
+OPTEE_PLATFORM="vexpress"
+OPTEE_BUILD_ENABLED=1
+OPTEE_WITH_PAGER=y
+OPTEE_FLAVOUR="fvp"
+# set any value to OPTEE_SUPPORT_GICV3 will enble the GICV3 function
+OPTEE_SUPPORT_GICV3=1
+
+UEFI_BUILD_ENABLED=0

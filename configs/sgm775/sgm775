@@ -1,0 +1,63 @@
+# Copyright (c) 2015, ARM Limited and Contributors. All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# Redistributions of source code must retain the above copyright notice, this
+# list of conditions and the following disclaimer.
+#
+# Redistributions in binary form must reproduce the above copyright notice,
+# this list of conditions and the following disclaimer in the documentation
+# and/or other materials provided with the distribution.
+#
+# Neither the name of ARM nor the names of its contributors may be used
+# to endorse or promote products derived from this software without specific
+# prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+
+source $DIR/configs/common/common.sgm
+
+#ARM TF
+ARM_TF_PLATS="sgm775"
+ARM_TF_BUILD_FLAGS="CSS_USE_SCMI_SDS_DRIVER=1"
+
+SCP_PATH=scp
+SCP_PLATFORMS="sgm775"
+SCP_BUILD_ENABLED=1
+
+TARGET_BINS_PLATS="sgm775"
+declare -A TARGET_sgm775
+TARGET_sgm775[fdts]="sgm775"
+TARGET_sgm775[output]=sgm775
+TARGET_sgm775[arm-tf]="sgm775"
+TARGET_sgm775[uboot]="css-common"
+TARGET_sgm775[uefi]="css-common"
+TARGET_sgm775[linux]="Image uImage.0x80080000"
+TARGET_sgm775[ramdisk]=0x88000000
+TARGET_sgm775[tbbr]=1
+TARGET_sgm775[optee]=1
+TARGET_sgm775[scp]="sgm775"
+
+COMPONENT_FLAVOUR=css-mobile
+
+LINUX_mobile_bb_64[config]="linaro-base vexpress64"
+
+ANDROID_BINS_VARIANTS="sgm775"
+
+declare -A LINUX_android_64
+LINUX_android_64[path]="linux"
+LINUX_android_64[outpath]="linux"
+LINUX_android_64[config]="linaro-base mali-v0 android vexpress64 EAS"
+
+ANDROID_LINUX_CONFIG_LIST=android_64

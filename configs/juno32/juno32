@@ -1,0 +1,53 @@
+# Copyright (c) 2015, ARM Limited and Contributors. All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# Redistributions of source code must retain the above copyright notice, this
+# list of conditions and the following disclaimer.
+#
+# Redistributions in binary form must reproduce the above copyright notice,
+# this list of conditions and the following disclaimer in the documentation
+# and/or other materials provided with the distribution.
+#
+# Neither the name of ARM nor the names of its contributors may be used
+# to endorse or promote products derived from this software without specific
+# prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+
+# Definitions that need to be in place before we source the fvp config
+LINUX_IMAGE_TYPE=zImage
+UEFI_BUILD_ENABLED=0
+
+# fvp32 is mostly fvp with some tweaks, so include it
+source ${DIR}/configs/common/common.juno
+
+# over-ride some things from fvp that are specific to fvp32
+export CROSS_COMPILE=${CROSS_COMPILE_32}
+
+LINUX_ARCH=arm
+#Override the configs, no vexpress64
+LINUX_mobile_bb[config]="linaro-base linaro-base-arm $BL_SUPPORT vexpress vexpress64"
+LINUX_mobile_oe[config]="linaro-base linaro-base-arm $BL_SUPPORT distribution vexpress vexpress64"
+LINUX_android[config]="linaro-base linaro-base-arm $BL_SUPPORT android vexpress vexpress64"
+LINUX_CONFIG_LIST=""
+
+UBOOT_BOARDS="vexpress_juno_aarch32"
+UBOOT_OUTPUT_DESTS[vexpress_juno_aarch32]=juno
+
+OPTEE_BUILD_ENABLED=0
+ARM_TF_BL32_FLAGS="CSS_USE_SCMI_SDS_DRIVER=1 AARCH32_SP=sp_min RESET_TO_SP_MIN=1 JUNO_AARCH32_EL3_RUNTIME=1"
+ARM_TF_BUILD_FLAGS="CSS_USE_SCMI_SDS_DRIVER=1 JUNO_AARCH32_EL3_RUNTIME=1 AARCH32=1 AARCH32_SP=sp_min RESET_TO_SP_MIN=1"
+ARM_TF_DEBUG_ENABLED=0
+ARM_TF_AARCH32_EL3_RUNTIME=1
