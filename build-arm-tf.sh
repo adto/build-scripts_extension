@@ -80,9 +80,17 @@ do_build ()
 			fi
 		
 			echo "CROSS_COMPILE=$TMP_CROSS_COMPILE"
-			echo "make -j $PARALLELISM PLAT=$plat ARCH=$ARM_TF_ARCH ENABLE_RME=1 DEBUG=$ARM_TF_DEBUG_ENABLED ${atf_build_flags} ${targets}"
+			
+			echo "make -j $PARALLELISM PLAT=$plat ARCH=$ARM_TF_ARCH DEBUG=$ARM_TF_DEBUG_ENABLED ${atf_build_flags} ${targets}"
+			#adto fix RME
+			#echo "make -j $PARALLELISM PLAT=$plat ARCH=$ARM_TF_ARCH ENABLE_RME=1 DEBUG=$ARM_TF_DEBUG_ENABLED ${atf_build_flags} ${targets}"
+			
 			CROSS_COMPILE=$TMP_CROSS_COMPILE \
-			make -j $PARALLELISM PLAT=$plat ARCH=$ARM_TF_ARCH ENABLE_RME=1 DEBUG=$ARM_TF_DEBUG_ENABLED ${atf_build_flags} ${targets}
+			
+			make -j $PARALLELISM PLAT=$plat ARCH=$ARM_TF_ARCH DEBUG=$ARM_TF_DEBUG_ENABLED ${atf_build_flags} ${targets}
+			#adto fix RME
+			#make -j $PARALLELISM PLAT=$plat ARCH=$ARM_TF_ARCH ENABLE_RME=1 DEBUG=$ARM_TF_DEBUG_ENABLED ${atf_build_flags} ${targets}
+		    
 		done
 
 		# make tools

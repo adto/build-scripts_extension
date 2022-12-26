@@ -286,7 +286,11 @@ do_package()
 					bl32_fip_param="${bl32_param_id} ${OUTDIR}/${!uefi_out}/${UEFI_MM_PAYLOAD_BIN}"
 				fi
 
-				local fip_param="${rmm_fip_param} ${bl2_fip_param} ${bl30_fip_param} ${bl32_fip_param} ${EXTRA_FIP_PARAM} ${hw_config_fip_param} ${fw_config_fip_param} ${tb_fw_config_fip_param} ${nt_fw_config_fip_param} ${soc_fw_config_fip_param}"
+				local fip_param="${bl2_fip_param} ${bl30_fip_param} ${bl32_fip_param} ${EXTRA_FIP_PARAM} ${hw_config_fip_param} ${fw_config_fip_param} ${tb_fw_config_fip_param} ${nt_fw_config_fip_param} ${soc_fw_config_fip_param}"
+				
+				#adto fix RME
+				#fip_param="$fip_param ${rmm_fip_param}"	
+						
 				if [ "$ARM_TF_ARCH" == "aarch64" ] && [ "$ARM_TF_AARCH32_EL3_RUNTIME" != "1" ]; then
 					fip_param="$fip_param ${bl31_fip_param}"
 				else
@@ -332,8 +336,9 @@ do_package()
 							${bl33_param_id} ${OUTDIR}/${!uboot_out}/uboot.bin
 					fi
 
-					#adto fix
+					#adto fix debug
 					#echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!adto!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"	
+					#echo "${fip_tool}"
 					#echo "${fip_tool} create \
 				    #	   ${fip_param} \
 					#	   ${bl33_param_id} ${OUTDIR}/${!uboot_out}/uboot.bin \
